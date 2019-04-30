@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		html{
+			overflow: hidden;
+		}
+		#content{
+			margin: 10px auto;
+			position: relative;
+			background: url('./images/pb.jpg');
+			background-size: cover;
+		}
+		.plane{
+			width: 40px;
+			height: 48px;
+			background: url('./images/hj.png');
+			position: absolute;
+			left: 45%;
+			top: 90%;
+			z-index: 10;
+		}
+		.shell{
+			width: 3px;
+			height: 17px;
+			background: url('./images/shell.png');
+			position: absolute;
+			z-index: 10;
+		}
+		.sec{
+			width: 25px;
+			height: 25px;
+			background: url("./images/bomb.png") no-repeat -68px;
+			position: absolute;
+			z-index: 1;
+			transform:translatex(-50%) translatey(-5px);
+			animation: osec 1s forwards;
+		
+		}
+		@keyframes osec{
+			from{opacity: 1;}
+			to{opacity: 0;}
+		}
+		.secP{
+			width: 50px;
+			height: 50px;
+			background: url("./images/bomb.png") no-repeat -98px;
+			position: absolute;
+			z-index: 100;
+			transform:translatex(5px) translatey(-5px);
+			left: 45%;
+			top: 90%;
+		}
+		.enemy{
+			width: 16px;
+			height: 16px;
+			background: url('./images/z1.png');
+			position: absolute;
+			z-index: 10;
+		}
+		p{
+			width: 100px;
+			height: 50px;
+			background: #f1f1f1;
+			text-align: center;
+			line-height: 50px;
+			border-radius: 10px;
+			color: #666;
+			box-shadow: 3px 2px 2px #ccc;
+			position: fixed;
+			left: 100px;
+			top: 100px;
+			cursor: pointer;
+			-webkit-user-select:none;
+			-moz-user-select:none;
+			-ms-user-select:none;
+			-o-user-select:none;
+			user-select:none;
+		}
+		p:active{
+			left: 101px;
+			top: 101px;
+		}
+		h1{
+			position: fixed;
+			top: 200px;
+			left: 100px;
+		}
+	</style>
+</head>
+<body>
+	<p id="btn">开始</p>
+	<h1 id="h"></h1>
+	<div id="content" style="width:600px; height:640px;">
+		<div class="plane" id="plane"></div>
+		<div class="shell" style="display:none;"></div>
+		<div class="shell" style="display:none;"></div>
+		<div class="shell" style="display:none;"></div>
+		<div class="shell" style="display:none;"></div>
+		<div class="shell" style="display:none;"></div>
+		<div class="shell" style="display:none;"></div>
+		<div class="shell" style="display:none;"></div>
+		<div class="shell" style="display:none;"></div>
+		<div class="shell" style="display:none;"></div>
+		<div class="shell" style="display:none;"></div>
+		<span class="enemy" style="display:none;"></span>
+		<span class="enemy" style="display:none;"></span>
+		<span class="enemy" style="display:none;"></span>
+		<span class="enemy" style="display:none;"></span>
+		<span class="enemy" style="display:none;"></span>
+		<span class="enemy" style="display:none;"></span>
+		<span class="enemy" style="display:none;"></span>
+		<span class="enemy" style="display:none;"></span>
+		<span class="enemy" style="display:none;"></span>
+		<span class="enemy" style="display:none;"></span>
+	</div>
+	
+	<script>
+		document.onkeydown = function(en){
+			var e = en || window.event;
+			//获取视口宽高
+			var w = parseInt(content.style.width);
+			var h = parseInt(content.style.height);
+			if(plane.className != 'secP'){
+				switch(e.keyCode){
+					case 37:  //左
+						var left = plane.offsetLeft - 10;
+						if(left < 0){
+							left = 0;
+						}
+						isCrash();
+						plane.style.left = left + 'px';
+					break;
+					case 39:  //右
+						var left = plane.offsetLeft + 10;
+						if(left > w-40){
+							left = w-40;
+						}
+						isCrash();
+						plane.style.left = left + 'px';
+					break;
+					case 38:  //上
+						var top = plane.offsetTop - 10;
+						if(top < 0){
+							top = 0;
+						}
+						isCrash();
+						plane.style.top = top + 'px';
+					break;
+					case 40:  //下
+						var top = plane.offsetTop + 10;
+						if(top > h-48){
+							top = h-48;
+						}
+						isCrash();
+						plane.style.top = top + 'px';
+					break;
+					case 32: //空格 发射
+						fire(plane.offsetLeft,plane.offsetTop); //发射时将飞机的位置传入
+					break;
+				}
+			}
+			
+		}
+
+		//发射
+		function fire(left,top){
+			var shell = content.getElementsByTagName('div');
+			for(var i = 1; i < 11; i++){
+				if(shell[i].style.display == 'none'){
+					shell[i].style.display = 'block';
+					shell[i].style.left = (left+18.5) + 'px';
+					shell[i].style.top = top + 'px';
+					return;
+				}
+			}
+		}
+		
+		//获取敌机enemy
+		var en = content.getElementsByTagName('span');
+		var i = 0;
+		var btn = document.getElementById('btn');
+		btn.onclick = function(){
+			setInterval(function(){
+				if(i<10){
+					if(en[i].style.display == 'none'){
+						showEnemy(en[i]);
+						i++;
+					}
+				}else{
+					i = 0;
+				}
+			},500);
+		}
+		
+		//显现敌机并移动
+		function showEnemy(e){
+			var left = Math.floor(Math.random()*1000000000)%585;
+			e.style.left = left + 'px';
+			var stimer = setInterval(function(){
+				if(e.offsetTop < 620){
+					e.style.display = 'block';
+					e.style.top = e.offsetTop + 10 + 'px';
+					isCrash();
+				}else{
+					e.style.top = '0px';
+					e.style.display = 'none';
+					e.className = 'enemy';
+					clearInterval(stimer);
+				}
+			},100);
+		}
+
+		//让子弹飞
+		var timer = setInterval(flying,50);
+		var count = 0;
+		//定义flying函数
+		function flying(){
+			var shell = content.getElementsByTagName('div');
+			for(var j = 1; j < 11; j++){
+				if(shell[j].style.display == 'block'){
+					if(shell[j].offsetTop < 10 && shell[j].className != 'sec'){
+						shell[j].className = 'sec';
+					}else{
+						shell[j].className = 'shell';
+						shell[j].style.top = (shell[j].offsetTop - 10) + 'px';
+					}
+					for(var i = 0; i < en.length; i++){
+						var d = en[i].offsetTop - shell[j].offsetTop;
+						var w = shell[j].offsetLeft - en[i].offsetLeft;
+						if( d >= 0 && d <= 16 && w >= 0 && w <= 16 && shell[j].style.display != 'none' && en[i].className != 'sec') {
+							shell[j].style.display = 'none';
+							en[i].className = 'sec';
+							count++;
+							h.innerHTML = '消灭：'+count;
+						}
+					}
+				}
+				//回收炮弹
+				if(shell[j].offsetTop < 0){
+					shell[j].style.display = 'none';
+				}
+			}
+		}
+
+		//判断是否撞毁
+		function isCrash(){
+			var pl = plane.offsetLeft;
+			var pt = plane.offsetTop;
+			for(var m = 0; m < en.length; m++){
+				var ple = pl-(en[m].offsetLeft);
+				var pte = pt-(en[m].offsetTop);
+				if(ple >= 0 ){
+					ple -= 16;
+				}
+				if(pte >= 0){
+					pte -= 16;
+				}
+				if( ple <= 0 && ple >= -40 && pte <=0 && pte >= -48 && en[m].className != 'sec'&& plane.className != 'secP'){
+					plane.className = 'secP';
+					en[m].className = 'sec';
+					setTimeout(isGame,50);
+					return;
+				}
+			}
+		}
+		//判断是否重新开始游戏
+		function isGame(){
+			if(plane.className == 'secP'){
+				if(confirm('Game Over')){
+					window.location.reload();
+				}
+			}
+		}
+	</script>
+</body>
+</html>
