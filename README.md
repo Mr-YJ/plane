@@ -1,2 +1,2 @@
-plane
-![Image text](https://github.com/Mr-YJ/plane/tree/master/images/plane.png)
+打飞机
+![plane](https://raw.githubusercontent.com/Mr-YJ/plane/master/images/plane.png)
